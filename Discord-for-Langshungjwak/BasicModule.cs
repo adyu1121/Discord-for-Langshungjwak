@@ -2,7 +2,8 @@
 using Discord;
 using Lang_shung_jwak;
 using YHIUYIUL;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 public class BasicModule : InteractionModuleBase<SocketInteractionContext>
 {
     #region Channel
