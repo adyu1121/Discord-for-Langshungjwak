@@ -126,7 +126,10 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
         .AddField("/랭슝좍이란", "랭슝좍 언어에 대해서 설명합니다.")
         .AddField("/실행", "코드를 입력받아 실행합니다.")
         .AddField("/채널추가", "코드를 감지하는 채널을 추가합니다.")
-        .AddField("/채널삭제", "코드를 감지하는 채널을 제거합니다.");
+        .AddField("/채널삭제", "코드를 감지하는 채널을 제거합니다.")
+        .AddField("/기간늘림", "런타임의 기간을 늘립니다(3일).")
+        .AddField("/연결끊기", "런타임을 즉시 중지합니다.")
+        .AddField("/버그제보", "버그를 제보합니다.");
 
     private readonly EmbedBuilder infoembed = new EmbedBuilder()
         .WithTitle("문법")
