@@ -41,7 +41,7 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
     }
     #endregion
 
-    #region "Help"
+    #region Help
     [SlashCommand("랭슝좍이란", "랭슝좍 언어에 대해서 설명합니다")]
     public async Task WhatIsLangshungjwak()
     {
@@ -111,7 +111,7 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
  
         ModalBuilder modalBuilder = new ModalBuilder()
             .AddTextInput("어떤 상황이였나요?", "msg", TextInputStyle.Paragraph, "여기에 입력")
-            .AddTextInput("버그가 난 코드 입력", "code", TextInputStyle.Paragraph, "여기에 입력")
+            .AddTextInput("버그가 난 코드 입력", "code", TextInputStyle.Paragraph, "여기에 입력", required:false)
             .WithTitle("버그 제보")
             .WithCustomId("Report");
 
