@@ -163,13 +163,13 @@ public static class Database
     /// <param name="msg"></param>
     public static void Log(Guid guid, string msg)
     {
-        string q = "insert into log(message, data, time, guid) VALUES(?message, ?data, Now(), ?guid)";
+        string q = "insert into log(message, time, guid) VALUES(?message, Now(), ?guid)";
         try
         {
             using (MySqlCommand cmd = new MySqlCommand(q, client))
             {
                 cmd.Parameters.Add("?message", MySqlDbType.VarString).Value = msg;
-                cmd.Parameters.Add("?data", MySqlDbType.Date).Value = DateTime.Now.Date;
+                //cmd.Parameters.Add("?data", MySqlDbType.Date).Value = DateTime.Now.Date;
                 //cmd.Parameters.Add("?time", MySqlDbType.Timestamp).Value = DateTime.Now;
                 cmd.Parameters.Add("?guid", MySqlDbType.Guid).Value = guid;
                 if (!(cmd.ExecuteNonQuery() > 0))
