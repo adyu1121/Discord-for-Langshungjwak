@@ -6,7 +6,6 @@ using System.Threading.Channels;
 
 public static class Database
 {
-    private static Dictionary<ulong, ulong> C = new Dictionary<ulong, ulong>();
     private static MySqlConnection client;
 
     public static void Init()
@@ -30,11 +29,7 @@ public static class Database
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <returns></returns>
+
     public static bool IsSetServer(ulong serverId)
     {
         try
@@ -63,13 +58,7 @@ public static class Database
         }
     }
 
-    /// <summary>
-    /// 현재 랭슝좍을 감지하는 채널을 가져옵니다.
-    /// 만약 존재하지 않으면 0을 반환합니다.
-    /// 실행하기 전에 IsSetServer로 검사하세요.
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <returns></returns>
+
     public static ulong GetChannel(ulong serverId)
     {
         string q = "select channelId from channel where serverId=?serverId";
@@ -92,14 +81,7 @@ public static class Database
         }
     }
 
-    /// <summary>
-    /// 랭슝좍을 감지하는 채널을 추가합니다.
-    /// 만약 추가에 실패한다면 false를 반환합니다.
-    /// 실행하기 전에 IsSetServer로 검사하세요.
-    /// </summary>
-    /// <param name="serverId">서버의 id</param>
-    /// <param name="channelId">채널의 id</param>
-    /// <returns></returns>
+
     public static bool AddChannel(ulong serverId, ulong channelId)
     {
         string q = "insert into channel(serverId, channelId) VALUES(?serverId, ?channelId)";
@@ -125,14 +107,7 @@ public static class Database
 
     }
 
-    /// <summary>
-    /// 랭슝좍을 감지하는 채널을 삭제합니다.
-    /// 만약 삭제에 실패한다면 false를 반환합니다.
-    /// 실행하기 전에 IsSetServer로 검사하세요.
-    /// </summary>
-    /// <param name="serverId">서버의 id</param>
-    /// <param name="channelId">채널의 id</param>
-    /// <returns></returns>
+
     public static bool RemoveChannel(ulong serverId)
     {
         string q = "delete from channel where serverId = ?serverId";
@@ -156,11 +131,7 @@ public static class Database
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="guid"></param>
-    /// <param name="msg"></param>
+
     public static void Log(Guid guid, string msg)
     {
         string q = "insert into log(message, time, guid) VALUES(?message, Now(), ?guid)";
@@ -169,8 +140,6 @@ public static class Database
             using (MySqlCommand cmd = new MySqlCommand(q, client))
             {
                 cmd.Parameters.Add("?message", MySqlDbType.VarString).Value = msg;
-                //cmd.Parameters.Add("?data", MySqlDbType.Date).Value = DateTime.Now.Date;
-                //cmd.Parameters.Add("?time", MySqlDbType.Timestamp).Value = DateTime.Now;
                 cmd.Parameters.Add("?guid", MySqlDbType.Guid).Value = guid;
                 if (!(cmd.ExecuteNonQuery() > 0))
                 {
@@ -185,11 +154,7 @@ public static class Database
         Console.WriteLine(msg);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="msg"></param>
-    /// <param name="code"></param>
+
     public static bool Report(string msg, string code)
     {
         string q = "insert into report(message, code) VALUES(?message, ?code)";
