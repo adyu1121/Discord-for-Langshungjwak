@@ -1,8 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI;
 using System;
-using System.Collections.Generic;
-using System.Threading.Channels;
+
+namespace Lang_shung_jwak;
 
 public static class Database
 {
@@ -34,6 +33,8 @@ public static class Database
     {
         try
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} IsSetServer 시작");
+
             string q = """
                 
                 SELECT EXISTS
@@ -50,10 +51,12 @@ public static class Database
 
             reader.Read();
             int t = (int)reader["t"];
+            Log(Guid.Empty, $"[데이터베이스] {serverId} IsSetServer 성공");
             return t == 1;
         }
         catch (Exception ex)
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} IsSetServer 오류 {ex.Message}");
             return false;
         }
     }
@@ -64,19 +67,22 @@ public static class Database
         string q = "select channelId from channel where serverId=?serverId";
         try
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} GetChannel 시작");
+
             using MySqlCommand cmd = new MySqlCommand(q, client);
 
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
 
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                reader.Read();
-                ulong id = (ulong)reader["channelId"];
-                return id;
-            }
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            reader.Read();
+            ulong id = (ulong)reader["channelId"];
+            Log(Guid.Empty, $"[데이터베이스] {serverId} GetChannel 성공");
+            return id;
+
         }
         catch (Exception ex)
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} GetChannel 오류 {ex.Message}");
             return 0;
         }
     }
@@ -85,48 +91,56 @@ public static class Database
     public static bool AddChannel(ulong serverId, ulong channelId)
     {
         string q = "insert into channel(serverId, channelId) VALUES(?serverId, ?channelId)";
-        try
+        try    
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 시작");
+
             using MySqlCommand cmd = new MySqlCommand(q, client);
 
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
             cmd.Parameters.Add("?channelId", MySqlDbType.UInt64).Value = channelId;
             if (!(cmd.ExecuteNonQuery() > 0))
             {
+                Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 실행 못함");
                 return false;
             }
             else
             {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 성공");
                 return true;
             }
         }
         catch (Exception ex)
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 오류 {ex.Message}");
             return false;
         }
 
     }
-
-
     public static bool RemoveChannel(ulong serverId)
     {
         string q = "delete from channel where serverId = ?serverId";
         try
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} RemoveChannel 시작");
+
             using MySqlCommand cmd = new MySqlCommand(q, client);
 
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
             if (!(cmd.ExecuteNonQuery() > 0))
             {
+                Log(Guid.Empty, $"[데이터베이스] {serverId} RemoveChannel 실행 못함");
                 return false;
             }
             else
             {
+                Log(Guid.Empty, $"[데이터베이스] {serverId} RemoveChannel 성공");
                 return true;
             }
         }
         catch (Exception ex)
         {
+            Log(Guid.Empty, $"[데이터베이스] {serverId} RemoveChannel 오류 {ex.Message}");
             return false;
         }
     }
@@ -176,7 +190,7 @@ public static class Database
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Log(Guid.Empty, $"[데이터베이스] Report 오류 {ex.Message}");
             return false;
         }
     }

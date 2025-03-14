@@ -1,13 +1,15 @@
 ﻿using Discord;
+using Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using YHIUYIUL;
 
-using static Database;
+using static Lang_shung_jwak.Database;
+
+namespace Lang_shung_jwak;
 
 //TODO : 입 출력 토큰 무시(에러 안뜸)
 //TODO : 조건 없는 조건문이 에러남
@@ -223,6 +225,7 @@ public class Runner
             while (line >= 0 && line < commands.Count)
             {
                 var command = commands[line];
+                Log(guid, $"[인터프리터 {guid}] {line}번쨰 커맨드 실행 시작");
 
                 //만일 스레드가 종료되었다면 루프 빠져나오기
                 if (token.IsCancellationRequested)
@@ -278,6 +281,7 @@ public class Runner
                     //Read
                     case 3:
                         await UpdateContent();
+                        Log(guid, $"[인터프리터 {guid}] {line}번쨰 인풋 요청");
                         int? value = inputBuffer.Take();
                         if (value == null) continue;
 

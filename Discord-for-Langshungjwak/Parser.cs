@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+
+namespace Lang_shung_jwak;
 
 public partial class Parser
 {

@@ -1,9 +1,12 @@
 ﻿using Discord.Interactions;
 using Discord;
-using Lang_shung_jwak;
-using YHIUYIUL;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+
+using static Lang_shung_jwak.Database;
+
+namespace Lang_shung_jwak;
+
 public class BasicModule : InteractionModuleBase<SocketInteractionContext>
 {
     #region Channel
@@ -12,14 +15,26 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
     {
         ulong channel = Context.Channel.Id;
         ulong guild = Context.Guild.Id;
-        if (!Database.IsSetServer(guild))
+
+        Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 추가 시작");
+
+        if (Database.IsSetServer(guild))
         {
-            Database.AddChannel(guild, channel);
+            await RespondAsync("채널이 이미 등록되어있습니다.");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 존재");
+            return;
+        }
+
+        bool result = Database.AddChannel(guild, channel);
+        if(result)
+        {
             await RespondAsync("채널이 등록되었습니다");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 추가 완료");
         }
         else
         {
-            await RespondAsync("채널이 이미 등록되어있습니다.");
+            await RespondAsync("실행 중 오류");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} DB 오류");
         }
     }
 
@@ -29,14 +44,24 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
         ulong channel = Context.Channel.Id;
         ulong guild = Context.Guild.Id;
 
-        if (Database.IsSetServer(guild) && Database.GetChannel(guild) == channel)
+        Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 제거 시작");
+
+        if(!Database.IsSetServer(guild) || Database.GetChannel(guild) != channel)
         {
-            Database.RemoveChannel(guild);
+            await RespondAsync("등록된 채널이 아닙니다");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널이 존재");
+        }
+
+        bool result = Database.RemoveChannel(guild);
+        if (result)
+        {
             await RespondAsync("채널이 삭제되었습니다");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 삭제 완료");
         }
         else
         {
-            await RespondAsync("등록된 채널이 아닙니다");
+            await RespondAsync("실행 중 오류");
+            Log(Guid.Empty, $"[커맨드] {guild} : {channel} DB 오류");
         }
     }
     #endregion
@@ -49,8 +74,8 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
             "# 랭슝좍이란?\n" +
             "랭슝좍은 트릭컬 리바이브의 리슝좍 밈에서 착안하여, 코드를 짜면서도 비비와 순수를 따잇하는 재미를 느끼기 위해 만들어진 언어입니다.\n" +
             "엄랭 Github에서 아이디어를 얻어 제작했습니다.\n" +
-            "https://github.com/nabibear33/Lang-shung-jwak"
-            , embed: infoembed.Build());
+            "https://github.com/nabibear33/Lang-shung-jwak",
+            embed: infoembed.Build());
     }
 
     [SlashCommand("도움말", "도움말을 제공합니다.")]
@@ -89,19 +114,10 @@ public class BasicModule : InteractionModuleBase<SocketInteractionContext>
     [SlashCommand("실행", "랭슝좍 코드를 실행합니다.")]
     public async Task RunLangshungjwak()
     {
-        //var op = new SocketOperator(SocketOperator.Operator.CreatRunner);
-        //ButtonBuilder buttonBuilder = new ButtonBuilder()
-        //    .WithCustomId(op.ToString())
-        //    .WithLabel("코드 실행하기")
-        //    .WithStyle(ButtonStyle.Primary);
-        //ComponentBuilder componentBuilder = new ComponentBuilder()
-        //    .WithButton(buttonBuilder);
-
         var modal = new ModalBuilder()
                     .WithTitle("코드를 입력하세요")
                     .WithCustomId("Creat")
                     .AddTextInput("코드", "Creat", TextInputStyle.Paragraph, "여기에 입력");
-        //await RespondAsync("코드 입력", components: componentBuilder.Build());
         await RespondWithModalAsync(modal.Build());
     }
 
