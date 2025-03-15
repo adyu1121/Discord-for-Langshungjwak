@@ -45,10 +45,12 @@ public static class Database
             using MySqlCommand cmd = new MySqlCommand(q, client);
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-
-            reader.Read();
-            int t = (int)reader["t"];
+            int t = default;
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                reader.Read();
+                t = (int)reader["t"];
+            }
             Log(Guid.Empty, $"[데이터베이스] {serverId} IsSetServer 성공");
             return t == 1;
         }
@@ -71,12 +73,14 @@ public static class Database
 
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            reader.Read();
-            ulong id = (ulong)reader["channelId"];
+            ulong id = default;
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                reader.Read();
+                id = (ulong)reader["channelId"];
+            }
             Log(Guid.Empty, $"[데이터베이스] {serverId} GetChannel 성공");
             return id;
-
         }
         catch (Exception ex)
         {
