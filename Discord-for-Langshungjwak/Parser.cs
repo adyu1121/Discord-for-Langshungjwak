@@ -142,7 +142,4 @@ public partial class Parser
             this.value = value;
         }
     }
-
-    [GeneratedRegex("에잇")]
-    private static partial Regex BranchMatcher();
 }
