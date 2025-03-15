@@ -35,14 +35,12 @@ public static class Database
         {
             Log(Guid.Empty, $"[데이터베이스] {serverId} IsSetServer 시작");
 
-            string q = """
-                
-                SELECT EXISTS
-                (
-                	SELECT * FROM channel WHERE serverId=?serverId
-                ) AS t
-                
-                """;
+            string q =
+
+                "SELECT EXISTS" +
+                "(" +
+                "    SELECT * FROM channel WHERE serverId=?serverId" +
+                ") AS t";
 
             using MySqlCommand cmd = new MySqlCommand(q, client);
             cmd.Parameters.Add("?serverId", MySqlDbType.UInt64).Value = serverId;
@@ -106,7 +104,7 @@ public static class Database
             }
             else
             {
-            Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 성공");
+                Log(Guid.Empty, $"[데이터베이스] {serverId} AddChannel 성공");
                 return true;
             }
         }
@@ -174,16 +172,19 @@ public static class Database
         string q = "insert into report(message, code) VALUES(?message, ?code)";
         try
         {
+            Log(Guid.Empty, $"[데이터베이스] Report 시작");
             using (MySqlCommand cmd = new MySqlCommand(q, client))
             {
                 cmd.Parameters.Add("?message", MySqlDbType.VarString).Value = msg;
                 cmd.Parameters.Add("?code", MySqlDbType.VarString).Value = code;
                 if (!(cmd.ExecuteNonQuery() > 0))
                 {
+                    Log(Guid.Empty, $"[데이터베이스] Report 실행 못함");
                     return false;
                 }
                 else
                 {
+                    Log(Guid.Empty, $"[데이터베이스] Report 성공");
                     return true;
                 }
             }

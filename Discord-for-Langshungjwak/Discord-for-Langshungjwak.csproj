@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Discord_for_Langshungjwak</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>

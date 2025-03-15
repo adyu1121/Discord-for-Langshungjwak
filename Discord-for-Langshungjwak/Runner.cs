@@ -30,6 +30,11 @@ public class Runner
     private IMessageChannel channel;
     private string output;
 
+    private List<Command> commands;
+    public class RunnerException : Exception
+    {
+        public RunnerException(string message) : base(message) { }
+    }
     private class Command
     {
         /// <summary>
@@ -53,7 +58,6 @@ public class Runner
             ifExpression = new(read);
         }
     }
-    private List<Command> commands;
 
     public Runner(string code, IMessageChannel channel, Guid guid, DateTime dateTime)
     {
@@ -372,8 +376,4 @@ public class Runner
         Log(guid, $"[인터프리터 {guid}] 동작 끝남(스레드 종료)");
     }
 
-    public class RunnerException : Exception
-    {
-        public RunnerException(string message) : base(message) { }
-    }
 }
