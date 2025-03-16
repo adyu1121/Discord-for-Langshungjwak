@@ -285,7 +285,7 @@ public class Runner
                     //Read
                     case 3:
                         await UpdateContent();
-                        Log(guid, $"[인터프리터 {guid}] {line}번쨰 인풋 요청");
+                        Log(guid, $"[인터프리터 {guid}] 라인 {line} 인풋 요청");
                         int? value = inputBuffer.Take();
                         if (value == null) continue;
 

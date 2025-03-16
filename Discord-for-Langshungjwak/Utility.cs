@@ -34,7 +34,6 @@ public class ExpressionTree
                     3 => left.GetValue() / right.GetValue(),
                     _ => throw new NotSupportedException()
                 };
-                //Console.WriteLine($"left : {left.GetValue()}, right : {right.GetValue()} ,op : {value}, re : {i}");
                 return i;
             }
             else if (type == 0)
@@ -82,18 +81,15 @@ public class ExpressionTree
     public void PrintE()
     {
         if (lastTokenWasOperator) throw new TokenException("마지막 토큰은 연산자일 수 없습니다");
-        //Console.WriteLine($"{root} = {root.GetValue()}");
     }
     public void Add(int type, int value)
     {
-        //Console.WriteLine("Add");
         if ((lastTokenWasOperator && (type == 0 || type == 1)) || (!lastTokenWasOperator && type == 2))
         {
             Node newNode = new Node(type, value, readValue);
 
             if (root == null)
             {
-                //Console.WriteLine("root == null");
                 root = newNode;
             }
             else
@@ -128,13 +124,10 @@ public class ExpressionTree
     {
         if (isRootNull()) return 0;
         if (lastTokenWasOperator) throw new TokenException("마지막 토큰이 연잔자임");
-        //PrintE();
-        //Console.WriteLine(root.GetValue());
         return root.GetValue();
     }
     public bool isRootNull()
     {
-        //return isRootNull == null;
         return root == null;
     }
     public bool isReady()

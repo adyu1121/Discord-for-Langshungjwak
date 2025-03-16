@@ -9,63 +9,6 @@ namespace Lang_shung_jwak;
 
 public class BasicModule : InteractionModuleBase<SocketInteractionContext>
 {
-    #region Channel
-    [SlashCommand("채널추가", "랭슝좍 인터프리터가 감지할 채널을 설정합니다")]
-    public async Task AddChannel()
-    {
-        ulong channel = Context.Channel.Id;
-        ulong guild = Context.Guild.Id;
-
-        Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 추가 시작");
-
-        if (Database.IsSetServer(guild))
-        {
-            await RespondAsync("채널이 이미 등록되어있습니다.");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 존재");
-            return;
-        }
-
-        bool result = Database.AddChannel(guild, channel);
-        if(result)
-        {
-            await RespondAsync("채널이 등록되었습니다");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 추가 완료");
-        }
-        else
-        {
-            await RespondAsync("실행 중 오류");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} DB 오류");
-        }
-    }
-
-    [SlashCommand("채널삭제", "랭슝좍 인터프리터가 감지할 채널을 제거합니다")]
-    public async Task RemoveChannel()
-    {
-        ulong channel = Context.Channel.Id;
-        ulong guild = Context.Guild.Id;
-
-        Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널 제거 시작");
-
-        if(!Database.IsSetServer(guild) || Database.GetChannel(guild) != channel)
-        {
-            await RespondAsync("등록된 채널이 아닙니다");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 채널이 존재");
-        }
-
-        bool result = Database.RemoveChannel(guild);
-        if (result)
-        {
-            await RespondAsync("채널이 삭제되었습니다");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} 삭제 완료");
-        }
-        else
-        {
-            await RespondAsync("실행 중 오류");
-            Log(Guid.Empty, $"[커맨드] {guild} : {channel} DB 오류");
-        }
-    }
-    #endregion
-
     #region Help
     [SlashCommand("랭슝좍이란", "랭슝좍 언어에 대해서 설명합니다")]
     public async Task WhatIsLangshungjwak()

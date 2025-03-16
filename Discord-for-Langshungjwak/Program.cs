@@ -15,7 +15,8 @@ using static Lang_shung_jwak.Database;
 
 namespace Lang_shung_jwak;
 
-internal class Program
+
+class Program
 {
     private Dictionary<Guid, Runner> interpreter;
     private DiscordSocketClient client;
@@ -81,59 +82,6 @@ internal class Program
     {
         if (message.Author.IsBot) return; // 봇 메시지는 무시
         if (message.Channel is not SocketGuildChannel) return; // 채널이 서버 채널인지 확인
-
-        SocketGuildChannel guildChannel = (SocketGuildChannel)message.Channel;
-
-        ulong serverId = guildChannel.Guild.Id; // 서버 ID 가져오기
-        ulong channelId = message.Channel.Id;
-
-        if (!Database.IsSetServer(serverId) || Database.GetChannel(serverId) != channelId) return;
-
-        //파일일 때
-        if (message.Attachments.Count == 1)
-        {
-            HttpClient client = new HttpClient();
-
-            try
-            {
-                Uri uri = new Uri(message.Attachments.First().Url);
-                if(Path.GetExtension(uri.LocalPath) != ".jwak")
-                {
-                    await message.Channel.SendMessageAsync("파일의 확장자는 jwak이여야 합니다.");
-                    return;
-                }
-
-                // URL에서 텍스트 파일을 비동기적으로 읽기
-                string content = await client.GetStringAsync(message.Attachments.First().Url);
-
-                // 받아온 코드로 인터프리터 생성
-                Log(Guid.Empty, "[메인 프로세스] 파일로 러너 생성");
-                var result = CreateRunner(message.Channel, content).Result;
-
-                await message.Channel.SendMessageAsync(result.msg);
-                if (result.guid != Guid.Empty) interpreter[result.guid].Run();
-            }
-            catch (Exception ex)
-            {
-                await message.Channel.SendMessageAsync("에러 발생: " + ex.Message);
-                Log(Guid.Empty, "[메인 프로세스] 파일 읽기 중 에러 발생: " + ex.Message);
-            }
-
-            //TODO : using썼는데 오류나서 한번 바꿈(계속 오류나면 원인 찾아야됨)
-            client.Dispose();
-        }
-        else if (message.Attachments.Count == 0)
-        {
-            Log(Guid.Empty, "[메인 프로세스] 메세지로 러너 생성");
-            var result = CreateRunner(message.Channel, message.Content).Result;
-
-            await message.Channel.SendMessageAsync(result.msg);
-            if (result.guid != Guid.Empty) interpreter[result.guid].Run();
-        }
-        else
-        {
-            await message.Channel.SendMessageAsync($"1개의 파일만 보내주세요.");
-        }
     }
     private async Task InteractionHandle(SocketInteraction interaction)
     {
@@ -145,18 +93,7 @@ internal class Program
     {
         var operater = SocketOperator.Parse(component.Data.CustomId);
 
-        if (operater.OpCode == SocketOperator.Operator.CreatRunner)
-        {
-            // 버튼을 눌렀을 때 모달 열기
-            var modal = new ModalBuilder()
-                .WithTitle("코드를 입력하세요")
-                .WithCustomId("Creat")
-                .AddTextInput("코드:", "Creat", TextInputStyle.Paragraph, "여기에 입력");
-
-            await component.RespondWithModalAsync(modal.Build());
-
-        }
-        else if (operater.OpCode == SocketOperator.Operator.InputRunner)
+        if (operater.OpCode == SocketOperator.Operator.InputRunner)
         {
             if (!Guid.TryParse(operater[0], out Guid id))
             {
@@ -193,11 +130,13 @@ internal class Program
 
             if (!Guid.TryParse(input?.Value, out Guid guid))
             {
+                Log(Guid.Empty, $"[메인 프로세스] Delete {guid} GUID가 잘못되었습니다");
                 await modal.RespondAsync("GUID가 잘못되었습니다");
                 return;
             }
             if (!interpreter.ContainsKey(guid) || !interpreter[guid].isRunning)//키가 존재하고 작동중일때만
             {
+                Log(Guid.Empty, $"[메인 프로세스] Delete {guid} GUID가 존재하지 않습니다");
                 await modal.RespondAsync("GUID가 존재하지 않습니다");
                 return;
             }
@@ -214,11 +153,13 @@ internal class Program
 
             if (!Guid.TryParse(input?.Value, out Guid guid))
             {
+                Log(Guid.Empty, $"[메인 프로세스] Long {guid} GUID가 잘못되었습니다");
                 await modal.RespondAsync("GUID가 잘못되었습니다");
                 return;
             }
             if (!interpreter.ContainsKey(guid) || !interpreter[guid].isRunning)//키가 존재하고 작동중일때만
             {
+                Log(Guid.Empty, $"[메인 프로세스] Long {guid} GUID가 존재하지 않습니다");
                 await modal.RespondAsync("GUID가 존재하지 않습니다");
                 return;
             }
@@ -246,36 +187,45 @@ internal class Program
 
             if (!Guid.TryParse(input.CustomId, out Guid guid))
             {
+                Log(Guid.Empty, $"[메인 프로세스] Input {guid} GUID가 잘못되었습니다");
                 await modal.RespondAsync("GUID가 아님");
                 return;
             }
             if (!interpreter.ContainsKey(guid))
             {
+                Log(Guid.Empty, $"[메인 프로세스] Input {guid} GUID가 존재하지 않습니다");
                 await modal.RespondAsync("GUID가 없음");
                 return;
             }
 
             try
             {
-                if(int.TryParse(input.Value, out int result))
+                Log(Guid.Empty, $"[메인 프로세스] Input {input.Value}");
+
+                if (int.TryParse(input.Value, out int result))
                 {
+                    Log(Guid.Empty, $"[메인 프로세스] Input {guid} 입력 완료");
                     interpreter[guid].Input(result);
                     await modal.RespondAsync("입력 완료");
                 }
                 else
                 {
+                    Log(Guid.Empty, $"[메인 프로세스] Input {guid} 숫자만을 입력해주세요");
                     await modal.RespondAsync("숫자만을 입력해주세요");
                 }
             }
             catch(InvalidOperationException ex)
             {
+                Log(Guid.Empty, $"[메인 프로세스] Input {guid} 런타임이 끝났습니다.");
                 await modal.RespondAsync("런타임이 끝났습니다.");
             }
             catch (Exception ex)
             {
+                Log(Guid.Empty, $"[메인 프로세스] Input {guid} 실행 중 오류 : {ex.Message}");
                 await modal.RespondAsync($"실행 중 오류 : {ex.Message}");
             }
         }
+
         else if (id == "Report")
         {
             var msg = modal.Data.Components.First(x => x.CustomId == "msg");
