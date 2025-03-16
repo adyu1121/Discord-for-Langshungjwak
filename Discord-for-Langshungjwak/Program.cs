@@ -177,7 +177,7 @@ class Program
             Log(Guid.Empty, "[메인 프로세스] 버튼으로 러너 생성");
             var result = CreateRunner(modal.Channel, input?.Value).Result;
 
-            await modal.RespondAsync(result.msg);
+            await modal.RespondAsync(result.msg, ephemeral:true);
             if (result.guid != Guid.Empty) interpreter[result.guid].Run();
         }
         //인터프리터 입력
