@@ -229,7 +229,7 @@ public class Runner
             while (line >= 0 && line < commands.Count)
             {
                 var command = commands[line];
-                Log(guid, $"[인터프리터 {guid}] {line}번쨰 커맨드 실행 시작");
+                /Log(guid, $"[인터프리터 {guid}] {line}번쨰 커맨드 실행 시작");
 
                 //만일 스레드가 종료되었다면 루프 빠져나오기
                 if (token.IsCancellationRequested)
